@@ -32,10 +32,6 @@ struct KW_GUI {
   SDL_bool cursordown; /* indicates whether the cursor is clicked or not */
   SDL_bool cursorwasdown;
   
-  SDL_Event evqueue[1024];
-  int evqueuesize;
-  SDL_mutex * evqueuelock;
-  
   struct {
     struct KW_GUICallback {
       GUIHandler handler;

@@ -123,52 +123,39 @@ void KeyDown(KW_GUI * gui, SDL_Keycode key, SDL_Scancode scan) {
   KW_FireWidgetEvent(gui->currentfocus, KW_OnKeyDown, KW_ON_KEYDOWN, (gui->currentfocus, key, scan));
 }
 
-/* to capture mouse movements, clicks, types, etc */
-int KW_EventWatcher(void * data, SDL_Event * event) {
-  KW_GUI * gui = (KW_GUI *) data;
-  SDL_LockMutex(gui->evqueuelock);    
-  gui->evqueue[(gui->evqueuesize)++] = *event;
-  SDL_UnlockMutex(gui->evqueuelock);  
-  return 0;
+void KW_ProcessEvent(KW_GUI * gui, SDL_Event * event) {
+  switch (event->type) {
+    case SDL_MOUSEMOTION:
+      MouseMoved(gui, event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
+      break;
+    case SDL_MOUSEBUTTONDOWN:
+      MousePressed(gui, event->button.x, event->button.y, event->button.button);
+      break;
+      
+    case SDL_MOUSEBUTTONUP:
+      MouseReleased(gui, event->button.x, event->button.y, event->button.button);
+      break;
+      
+    case SDL_TEXTINPUT:
+      TextInputReady(gui, event->text.text);
+      break;
+      
+    case SDL_TEXTEDITING:
+      break;
+      
+    case SDL_KEYDOWN:
+      KeyDown(gui, event->key.keysym.sym, event->key.keysym.scancode);
+      break;
+    case SDL_KEYUP:
+      KeyUp(gui, event->key.keysym.sym, event->key.keysym.scancode);
+      break;      
+    default:
+      break;
+  }
 }
 
-void KW_ProcessEvents(KW_GUI * gui) {
-  int i = 0;
-  SDL_LockMutex(gui->evqueuelock);
+void KW_BeginProcessEvents(KW_GUI * gui) {
   gui->cursorwasdown = SDL_FALSE;
-  for (i = 0; i < gui->evqueuesize; i++) {
-    SDL_Event * event = gui->evqueue + i;
-    switch (event->type) {
-      case SDL_MOUSEMOTION:
-        MouseMoved(gui, event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
-        break;
-      case SDL_MOUSEBUTTONDOWN:
-        MousePressed(gui, event->button.x, event->button.y, event->button.button);
-        break;
-        
-      case SDL_MOUSEBUTTONUP:
-        MouseReleased(gui, event->button.x, event->button.y, event->button.button);
-        break;
-        
-      case SDL_TEXTINPUT:
-        TextInputReady(gui, event->text.text);
-        break;
-        
-      case SDL_TEXTEDITING:
-        break;
-        
-      case SDL_KEYDOWN:
-        KeyDown(gui, event->key.keysym.sym, event->key.keysym.scancode);
-        break;
-      case SDL_KEYUP:
-        KeyUp(gui, event->key.keysym.sym, event->key.keysym.scancode);
-        break;      
-      default:
-        break;
-    }
-  }
-  gui->evqueuesize = 0;
-  SDL_UnlockMutex(gui->evqueuelock);
 }
 
 #undef KW_FireWidgetEvent

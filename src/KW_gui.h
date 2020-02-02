@@ -228,7 +228,8 @@ extern DECLSPEC void KW_Paint(KW_GUI * gui);
  *          Most input based callbacks will be called before this function returns.
  * \param   gui The KW_GUI instance holding the widget tree.
  */
-extern DECLSPEC void KW_ProcessEvents(KW_GUI * gui);
+extern DECLSPEC void KW_BeginProcessEvents(KW_GUI * gui);
+extern DECLSPEC void KW_ProcessEvent(KW_GUI * gui, SDL_Event * event);
 
 #ifdef __cplusplus
 }

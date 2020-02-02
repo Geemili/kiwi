@@ -13,9 +13,7 @@ KW_GUI * KW_Init(KW_RenderDriver * renderer, KW_Surface * tileset) {
   KW_SetTilesetSurface(gui, tileset);
   gui->rootwidget = AllocWidget();
   gui->rootwidget->gui = gui;
-  gui->evqueuelock = SDL_CreateMutex();
   gui->defaultfont = KW_LoadFontFromMemory(renderer, resources_sourcesans_pro_semibold_ttf, resources_sourcesans_pro_semibold_ttf_size, 12);
-  SDL_AddEventWatch(KW_EventWatcher, (void*)gui);
   srand((unsigned) time(NULL));
   
   return gui;
@@ -61,7 +59,6 @@ KW_Surface * KW_GetTilesetSurface(KW_GUI * gui) {
 
 
 void KW_Quit(KW_GUI * gui) {
-  SDL_DelEventWatch(KW_EventWatcher, (void*)gui);
   KW_DestroyWidget(gui->rootwidget, 1);
   KW_ReleaseFont(gui->renderer, gui->defaultfont);
   KW_ReleaseTexture(gui->renderer, gui->tilesettexture);
